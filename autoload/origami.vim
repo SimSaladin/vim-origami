@@ -26,6 +26,11 @@ function! s:Init()                                                              
   let s:fmr_regex_pre_level  = '\s*\(' . escape(s:comment_string[0], '*') . '\)\?\s*' . s:fmr[0]
   let s:fmr_regex_post_level = '\s*\(' . escape(s:comment_string[1], '*') . '\)\?\s*$'
   let s:fmr_regex            = s:fmr_regex_pre_level . '\(\d*\)' . s:fmr_regex_post_level
+  " Same as above except that matches also when there's text that's not just
+  " space between commentstring[0] and foldmarker[0]. To calculating lengths
+  " more correctly.
+  let s:fmr_regex_pre_level2 = '\s*\(' . escape(s:comment_string[0], '*') . '.\{-}\)\?\s*' . s:fmr[0]
+  let s:fmr_regex2           = s:fmr_regex_pre_level2 . '\(\d*\)' . s:fmr_regex_post_level
 
   if !s:separate_levels
     let s:fold_at_col = s:Get('OrigamiFoldAtCol')
@@ -73,7 +78,7 @@ function! s:ReconFolds()                                                        
     let l:line = getline(l:lnum)
 
     " ... check if a foldmarker is present at the end and if it does ...
-    let l:match = matchlist(l:line, s:fmr_regex)
+    let l:match = matchlist(l:line, s:fmr_regex2)
       " l:match[1] - Comment string start
       " l:match[2] - Foldlevel
       " l:match[3] - Comment string end
