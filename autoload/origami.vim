@@ -22,6 +22,7 @@ function! s:Init()                                                              
   let s:staggered_spacing = 0
   let s:separate_levels   = s:Get('OrigamiSeparateLevels')
   let s:padding           = s:Get('OrigamiPadding')
+  let s:dynamic_col       = s:Get('OrigamiDynamicCol', 0)
 
   let s:fmr_regex_pre_level  = '\s*\(' . escape(s:comment_string[0], '*') . '\)\?\s*' . s:fmr[0]
   let s:fmr_regex_post_level = '\s*\(' . escape(s:comment_string[1], '*') . '\)\?\s*$'
@@ -40,6 +41,12 @@ function! s:Init()                                                              
     endif
     if (s:fold_at_col != 0)
       let s:fold_at_col -= len(s:comment_string[0])
+      if (s:dynamic_col != 0)
+        " Accomodate for comment string after the marker when that's the case.
+        " NOTE: cut one character longer because a space is inserted between
+        " any foldmarker and closing comment string.
+        let s:fold_at_col -= s:comment_string[1] !=# '' ? len(s:comment_string[1]) + 1 : 0
+      endif
     else
       let s:inc_all_lines = s:Get('OrigamiIncAllLines')
     endif
@@ -53,6 +60,7 @@ function! origami#Debug()                                                       
   echo "OrigamiCommentString    : " . "[" . join(s:comment_string, ',') . "]"
   echo "OrigamiSeparateLevels   : " . s:separate_levels
   echo "OrigamiFoldAtCol        : " . s:fold_at_col
+  echo "OrigamiDynamicCol       : " . s:dynamic_col
   echo "OrigamiIncAllLines      : " . s:inc_all_lines
   echo "OrigamiStaggeredSpacing : " . s:staggered_spacing
   echo "OrigamiPadding          : " . s:padding
@@ -182,6 +190,7 @@ function! origami#AlignFoldmarkers(...)                                         
         let l:match[1] = repeat(" ", len(s:comment_string[0]))
       endif
 
+      " Adds an additional space before closing comment (if there is to be one)
       if l:match[2] != "" | let l:match[2] = " " . l:match[2] | endif
 
       let l:stagger_pad = repeat(' ', (l:foldlevel - min(keys(l:fold_info))) * s:staggered_spacing)

@@ -119,6 +119,14 @@ Set up Origami the way you want using the following options
   spaces to stagger and if not, it specifies the number of tabs.
   `b:OrigamiStaggeredSpacing` can be specified for buffer-specific settings.
 
+                                                             *OrigamiDynamicCol*
+'g:OrigamiDynamicCol'
+  Type: boolean, Default: 0
+  Specify if the offset of `g:OrigamiFoldAtCol` should change to accomodate
+  the width of a trailing comment string (such as " */") automatically. The
+  length of the comment string's is subtracted so that the markers can avoid
+  stretching beyond |textwidth|.
+
 
 ==============================================================================
                                                           *origami-contributing*
